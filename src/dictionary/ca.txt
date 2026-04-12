@@ -90,3 +90,46 @@ viure
 volta
 xarxa
 zones
+# base words (3-4 letters) – pluralized to 5-letter forms at load time
+# 4-letter words ending in a → +s (Catalan -a → -es via +s rule)
+nota
+zona
+sala
+pena
+tema
+copa
+cola
+rata
+ruta
+vida
+bota
+cama
+cara
+cera
+fila
+gota
+lima
+luna
+meta
+moda
+mora
+seda
+sopa
+tela
+# 4-letter words ending in e → +s
+base
+fase
+nave
+cine
+sede
+# 3-letter words ending in consonant → +es
+bar
+col
+pan
+sal
+sol
+# 3-letter words ending in z → ces
+voz
+vez
+luz
+pez

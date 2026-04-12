@@ -27,7 +27,7 @@ export function WinOverlay({
   }, [])
 
   const isLastLevel = currentLevel === phrases.length - 1
-  const buttonLabel = isLastLevel ? 'Empezar de nuevo' : 'Siguiente'
+  const buttonLabel = isLastLevel ? 'Tornar a començar' : 'Següent'
 
   return (
     <div className="win-overlay">
