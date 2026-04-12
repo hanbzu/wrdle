@@ -21,3 +21,4 @@ export type GameAction =
   | { type: 'SUBMIT_WORD' }
   | { type: 'WIN' }
   | { type: 'NEXT_LEVEL' }
+  | { type: 'RESET_ATTEMPT' }

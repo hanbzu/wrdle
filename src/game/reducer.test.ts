@@ -184,3 +184,42 @@ describe('reducer — WIN / NEXT_LEVEL', () => {
     expect(state.gameStatus).toBe('won')
   })
 })
+
+describe('reducer — fail and retry (V5)', () => {
+  /** Helper: submit a dummy 5-letter word that won't win phrase 0. */
+  function submitMiss(state: ReturnType<typeof initialState>) {
+    for (const l of 'FFFFF') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+    return reducer(state, { type: 'SUBMIT_WORD' })
+  }
+
+  it('resets attempt after 5 failed guesses', () => {
+    let state = initialState()
+    for (let i = 0; i < 5; i++) state = submitMiss(state)
+    expect(state.guesses).toHaveLength(0)
+    expect(state.revealedChars.size).toBe(0)
+    expect(state.missedChars.size).toBe(0)
+    expect(state.currentInput).toBe('')
+    expect(state.gameStatus).toBe('playing')
+  })
+
+  it('stays on the same level after a failed attempt', () => {
+    let state = initialState()
+    for (let i = 0; i < 5; i++) state = submitMiss(state)
+    expect(state.currentLevel).toBe(0)
+  })
+
+  it('does not reset before the 5th guess', () => {
+    let state = initialState()
+    for (let i = 0; i < 4; i++) state = submitMiss(state)
+    expect(state.guesses).toHaveLength(4)
+  })
+
+  it('RESET_ATTEMPT action clears attempt state directly', () => {
+    let state = initialState()
+    state = submitMiss(state)
+    state = reducer(state, { type: 'RESET_ATTEMPT' })
+    expect(state.guesses).toHaveLength(0)
+    expect(state.revealedChars.size).toBe(0)
+    expect(state.currentLevel).toBe(0)
+  })
+})

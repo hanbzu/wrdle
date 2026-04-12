@@ -69,20 +69,54 @@ export function reducer(state: GameState, action: GameAction): GameState {
 
       const newRevealed = new Set([...state.revealedChars, ...revealed])
       const newMissed = new Set([...state.missedChars, ...missed])
+      const newGuesses = [...state.guesses, word]
       const won = checkWin(phrase, newRevealed)
+
+      if (won) {
+        return {
+          ...state,
+          guesses: newGuesses,
+          revealedChars: newRevealed,
+          missedChars: newMissed,
+          currentInput: '',
+          gameStatus: 'won',
+        }
+      }
+
+      // 5th guess without a win — reset the attempt
+      if (newGuesses.length >= 5) {
+        return {
+          ...state,
+          guesses: [],
+          revealedChars: new Set(),
+          missedChars: new Set(),
+          currentInput: '',
+          gameStatus: 'playing',
+        }
+      }
 
       return {
         ...state,
-        guesses: [...state.guesses, word],
+        guesses: newGuesses,
         revealedChars: newRevealed,
         missedChars: newMissed,
         currentInput: '',
-        gameStatus: won ? 'won' : 'playing',
       }
     }
 
     case 'WIN': {
       return { ...state, gameStatus: 'won' }
+    }
+
+    case 'RESET_ATTEMPT': {
+      return {
+        ...state,
+        guesses: [],
+        revealedChars: new Set(),
+        missedChars: new Set(),
+        currentInput: '',
+        gameStatus: 'playing',
+      }
     }
 
     case 'NEXT_LEVEL': {
