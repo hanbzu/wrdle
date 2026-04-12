@@ -12,25 +12,31 @@ function App() {
   const phrase = phrases[state.currentLevel]
 
   return (
-    <div className="game">
-      <main className="game-main">
-        <PhraseDisplay phrase={phrase} revealedChars={state.revealedChars} />
-        <GuessHistory
-          guesses={state.guesses}
-          revealedChars={state.revealedChars}
-          missedChars={state.missedChars}
-          currentInput={state.currentInput}
-          invalidSubmit={state.invalidSubmit}
-        />
-      </main>
+    <div className="page">
+      <div className="scroll-prompt">
+        Nivell {state.currentLevel + 1} · desplaça't cap avall per jugar ↓
+      </div>
 
-      <footer className="game-footer">
-        <Keyboard
-          dispatch={dispatch}
-          revealedChars={state.revealedChars}
-          missedChars={state.missedChars}
-        />
-      </footer>
+      <div className="game">
+        <main className="game-main">
+          <PhraseDisplay phrase={phrase} revealedChars={state.revealedChars} />
+          <GuessHistory
+            guesses={state.guesses}
+            revealedChars={state.revealedChars}
+            missedChars={state.missedChars}
+            currentInput={state.currentInput}
+            invalidSubmit={state.invalidSubmit}
+          />
+        </main>
+
+        <footer className="game-footer">
+          <Keyboard
+            dispatch={dispatch}
+            revealedChars={state.revealedChars}
+            missedChars={state.missedChars}
+          />
+        </footer>
+      </div>
 
       {state.gameStatus === 'won' && (
         <WinOverlay phrase={phrase} currentLevel={state.currentLevel} dispatch={dispatch} />
