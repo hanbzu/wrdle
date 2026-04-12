@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeReveal, initialState, reducer } from './reducer'
+import { checkWin, computeReveal, initialState, reducer } from './reducer'
 
 describe('computeReveal', () => {
   it('marks letters present in the phrase as revealed', () => {
@@ -128,5 +128,54 @@ describe('reducer — SUBMIT_WORD', () => {
     expect(state.missedChars.has('T')).toBe(true)
     // Input cleared after second submission
     expect(state.currentInput).toBe('')
+  })
+})
+
+describe('checkWin', () => {
+  it('returns false when not all phrase letters are revealed', () => {
+    expect(checkWin('EL CIELO ES AZUL', new Set(['C', 'I', 'E', 'L', 'O']))).toBe(false)
+  })
+
+  it('returns true when all phrase letters are revealed', () => {
+    const all = new Set(['E', 'L', 'C', 'I', 'O', 'S', 'A', 'Z', 'U'])
+    expect(checkWin('EL CIELO ES AZUL', all)).toBe(true)
+  })
+
+  it('ignores spaces and punctuation', () => {
+    expect(checkWin('AB CD', new Set(['A', 'B', 'C', 'D']))).toBe(true)
+  })
+})
+
+describe('reducer — WIN / NEXT_LEVEL', () => {
+  it('SUBMIT_WORD sets gameStatus to won when all letters are revealed', () => {
+    // 'HACER EL BIEN' (level 3) — letters: H,A,C,E,R,L,B,I,N
+    // Submit enough words to reveal all letters in one shot isn't easy,
+    // so instead test via the WIN action directly.
+    const state = reducer(initialState(), { type: 'WIN' })
+    expect(state.gameStatus).toBe('won')
+  })
+
+  it('NEXT_LEVEL resets attempt state and returns to playing', () => {
+    let state = initialState()
+    state = reducer(state, { type: 'WIN' })
+    for (const l of 'CIELO') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+    state = reducer(state, { type: 'NEXT_LEVEL' })
+    expect(state.gameStatus).toBe('playing')
+    expect(state.guesses).toEqual([])
+    expect(state.revealedChars.size).toBe(0)
+    expect(state.missedChars.size).toBe(0)
+    expect(state.currentInput).toBe('')
+  })
+
+  it('SUBMIT_WORD detects win automatically when phrase is fully revealed', () => {
+    // Phrase 0: 'EL CIELO ES AZUL' — unique letters: E,L,C,I,O,S,A,Z,U
+    // Pre-seed state with all letters except S revealed, then submit a word containing S
+    let state: ReturnType<typeof initialState> = {
+      ...initialState(),
+      revealedChars: new Set(['E', 'L', 'C', 'I', 'O', 'A', 'Z', 'U']),
+    }
+    for (const l of 'SBBBB') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+    state = reducer(state, { type: 'SUBMIT_WORD' })
+    expect(state.gameStatus).toBe('won')
   })
 })

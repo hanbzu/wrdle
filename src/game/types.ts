@@ -10,6 +10,8 @@ export interface GameState {
   missedChars: Set<string>
   /** Letters typed so far for the current word (max 5). */
   currentInput: string
+  /** Whether the phrase has been fully revealed. */
+  gameStatus: 'playing' | 'won'
 }
 
 /** All actions the reducer handles. */
@@ -17,3 +19,5 @@ export type GameAction =
   | { type: 'APPEND_LETTER'; letter: string }
   | { type: 'BACKSPACE' }
   | { type: 'SUBMIT_WORD' }
+  | { type: 'WIN' }
+  | { type: 'NEXT_LEVEL' }

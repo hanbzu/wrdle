@@ -9,6 +9,7 @@ export function initialState(): GameState {
     revealedChars: new Set(),
     missedChars: new Set(),
     currentInput: '',
+    gameStatus: 'playing',
   }
 }
 
@@ -36,6 +37,15 @@ export function computeReveal(
   return { revealed, missed }
 }
 
+/**
+ * Returns true when every letter in the phrase (ignoring spaces and punctuation)
+ * has been revealed.
+ */
+export function checkWin(phrase: string, revealedChars: Set<string>): boolean {
+  const phraseLetters = phrase.toUpperCase().replace(/[^A-ZÑ]/g, '').split('')
+  return phraseLetters.every((letter) => revealedChars.has(letter))
+}
+
 /** Pure reducer for all game actions. */
 export function reducer(state: GameState, action: GameAction): GameState {
   const phrase = phrases[state.currentLevel]
@@ -59,6 +69,7 @@ export function reducer(state: GameState, action: GameAction): GameState {
 
       const newRevealed = new Set([...state.revealedChars, ...revealed])
       const newMissed = new Set([...state.missedChars, ...missed])
+      const won = checkWin(phrase, newRevealed)
 
       return {
         ...state,
@@ -66,6 +77,23 @@ export function reducer(state: GameState, action: GameAction): GameState {
         revealedChars: newRevealed,
         missedChars: newMissed,
         currentInput: '',
+        gameStatus: won ? 'won' : 'playing',
+      }
+    }
+
+    case 'WIN': {
+      return { ...state, gameStatus: 'won' }
+    }
+
+    case 'NEXT_LEVEL': {
+      // V3 placeholder: resets the same phrase. V4 will advance currentLevel.
+      return {
+        ...state,
+        guesses: [],
+        revealedChars: new Set(),
+        missedChars: new Set(),
+        currentInput: '',
+        gameStatus: 'playing',
       }
     }
 

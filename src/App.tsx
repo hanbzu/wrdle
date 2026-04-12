@@ -2,6 +2,7 @@ import './App.css'
 import { GuessHistory } from './components/GuessHistory'
 import { Keyboard } from './components/Keyboard'
 import { PhraseDisplay } from './components/PhraseDisplay'
+import { WinOverlay } from './components/WinOverlay'
 import { WordInput } from './components/WordInput'
 import { useGame } from './game/useGame'
 import { phrases } from './phrases'
@@ -35,6 +36,10 @@ function App() {
           missedChars={state.missedChars}
         />
       </footer>
+
+      {state.gameStatus === 'won' && (
+        <WinOverlay phrase={phrase} dispatch={dispatch} />
+      )}
     </div>
   )
 }
