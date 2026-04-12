@@ -1,4 +1,5 @@
 import { phrases } from '../phrases'
+import { validateWord } from './dictionary'
 import type { GameAction, GameState } from './types'
 
 /** Returns the initial state for a fresh game. */
@@ -10,6 +11,7 @@ export function initialState(): GameState {
     missedChars: new Set(),
     currentInput: '',
     gameStatus: 'playing',
+    invalidSubmit: 0,
   }
 }
 
@@ -65,6 +67,12 @@ export function reducer(state: GameState, action: GameAction): GameState {
       if (state.currentInput.length !== 5) return state
 
       const word = state.currentInput
+
+      // Reject words not in the dictionary
+      if (!validateWord(word)) {
+        return { ...state, invalidSubmit: state.invalidSubmit + 1 }
+      }
+
       const { revealed, missed } = computeReveal(word, phrase)
 
       const newRevealed = new Set([...state.revealedChars, ...revealed])

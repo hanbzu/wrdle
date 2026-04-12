@@ -1,5 +1,12 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { checkWin, computeReveal, initialState, reducer } from './reducer'
+
+// Accept all words by default so existing reducer tests are unaffected.
+// Individual tests override this where needed.
+vi.mock('./dictionary', () => ({
+  validateWord: vi.fn(() => true),
+  dictionary: new Set<string>(),
+}))
 
 describe('computeReveal', () => {
   it('marks letters present in the phrase as revealed', () => {
@@ -221,5 +228,47 @@ describe('reducer — fail and retry (V5)', () => {
     expect(state.guesses).toHaveLength(0)
     expect(state.revealedChars.size).toBe(0)
     expect(state.currentLevel).toBe(0)
+  })
+})
+
+describe('reducer — dictionary validation (V6)', () => {
+  beforeEach(async () => {
+    const { validateWord } = await import('./dictionary')
+    vi.mocked(validateWord).mockReturnValue(true)
+  })
+
+  it('increments invalidSubmit and keeps input when word is not in dictionary', async () => {
+    const { validateWord } = await import('./dictionary')
+    vi.mocked(validateWord).mockReturnValueOnce(false)
+
+    let state = initialState()
+    for (const l of 'XZQWP') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+    state = reducer(state, { type: 'SUBMIT_WORD' })
+
+    expect(state.invalidSubmit).toBe(1)
+    expect(state.currentInput).toBe('XZQWP') // input kept for correction
+    expect(state.guesses).toHaveLength(0)
+  })
+
+  it('increments invalidSubmit again on repeated invalid submission', async () => {
+    const { validateWord } = await import('./dictionary')
+    vi.mocked(validateWord).mockReturnValue(false)
+
+    let state = initialState()
+    for (const l of 'XZQWP') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+    state = reducer(state, { type: 'SUBMIT_WORD' })
+    state = reducer(state, { type: 'SUBMIT_WORD' })
+
+    expect(state.invalidSubmit).toBe(2)
+  })
+
+  it('accepts valid words and does not increment invalidSubmit', () => {
+    // validateWord is mocked to return true by default
+    let state = initialState()
+    for (const l of 'CIELO') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+    state = reducer(state, { type: 'SUBMIT_WORD' })
+
+    expect(state.invalidSubmit).toBe(0)
+    expect(state.guesses).toHaveLength(1)
   })
 })

@@ -26,7 +26,11 @@ function App() {
           revealedChars={state.revealedChars}
           missedChars={state.missedChars}
         />
-        <WordInput input={state.currentInput} />
+        <WordInput
+          key={state.invalidSubmit}
+          input={state.currentInput}
+          invalid={state.invalidSubmit > 0}
+        />
       </main>
 
       <footer className="game-footer">

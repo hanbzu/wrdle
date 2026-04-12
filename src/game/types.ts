@@ -12,6 +12,8 @@ export interface GameState {
   currentInput: string
   /** Whether the phrase has been fully revealed. */
   gameStatus: 'playing' | 'won'
+  /** Incremented on each invalid submission — used to replay the shake animation. */
+  invalidSubmit: number
 }
 
 /** All actions the reducer handles. */
