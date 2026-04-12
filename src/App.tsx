@@ -38,7 +38,7 @@ function App() {
       </footer>
 
       {state.gameStatus === 'won' && (
-        <WinOverlay phrase={phrase} dispatch={dispatch} />
+        <WinOverlay phrase={phrase} currentLevel={state.currentLevel} dispatch={dispatch} />
       )}
     </div>
   )

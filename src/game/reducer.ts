@@ -86,9 +86,10 @@ export function reducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'NEXT_LEVEL': {
-      // V3 placeholder: resets the same phrase. V4 will advance currentLevel.
+      const nextLevel = (state.currentLevel + 1) % phrases.length
       return {
         ...state,
+        currentLevel: nextLevel,
         guesses: [],
         revealedChars: new Set(),
         missedChars: new Set(),

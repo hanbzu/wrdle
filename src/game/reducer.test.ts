@@ -155,16 +155,21 @@ describe('reducer — WIN / NEXT_LEVEL', () => {
     expect(state.gameStatus).toBe('won')
   })
 
-  it('NEXT_LEVEL resets attempt state and returns to playing', () => {
-    let state = initialState()
-    state = reducer(state, { type: 'WIN' })
-    for (const l of 'CIELO') state = reducer(state, { type: 'APPEND_LETTER', letter: l })
+  it('NEXT_LEVEL advances to the next level and resets attempt state', () => {
+    let state = reducer(initialState(), { type: 'WIN' })
     state = reducer(state, { type: 'NEXT_LEVEL' })
+    expect(state.currentLevel).toBe(1)
     expect(state.gameStatus).toBe('playing')
     expect(state.guesses).toEqual([])
     expect(state.revealedChars.size).toBe(0)
     expect(state.missedChars.size).toBe(0)
     expect(state.currentInput).toBe('')
+  })
+
+  it('NEXT_LEVEL wraps back to level 0 after the last level', () => {
+    const lastLevel = { ...initialState(), currentLevel: 4, gameStatus: 'won' as const }
+    const state = reducer(lastLevel, { type: 'NEXT_LEVEL' })
+    expect(state.currentLevel).toBe(0)
   })
 
   it('SUBMIT_WORD detects win automatically when phrase is fully revealed', () => {
