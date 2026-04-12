@@ -3,7 +3,6 @@ import { GuessHistory } from './components/GuessHistory'
 import { Keyboard } from './components/Keyboard'
 import { PhraseDisplay } from './components/PhraseDisplay'
 import { WinOverlay } from './components/WinOverlay'
-import { WordInput } from './components/WordInput'
 import { useGame } from './game/useGame'
 import { phrases } from './phrases'
 
@@ -20,11 +19,8 @@ function App() {
           guesses={state.guesses}
           revealedChars={state.revealedChars}
           missedChars={state.missedChars}
-        />
-        <WordInput
-          key={state.invalidSubmit}
-          input={state.currentInput}
-          invalid={state.invalidSubmit > 0}
+          currentInput={state.currentInput}
+          invalidSubmit={state.invalidSubmit}
         />
       </main>
 
