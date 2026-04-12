@@ -47,7 +47,7 @@ export function Keyboard({
               ]
                 .filter(Boolean)
                 .join(' ')}
-              onClick={() => handleKey(key)}
+              onPointerDown={(e) => { e.preventDefault(); handleKey(key) }}
             >
               {key}
             </button>

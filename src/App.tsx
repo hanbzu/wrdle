@@ -14,11 +14,6 @@ function App() {
 
   return (
     <div className="game">
-      <header className="game-header">
-        <h1>wrdle</h1>
-        <span className="level-badge">Frase {state.currentLevel + 1} / {phrases.length}</span>
-      </header>
-
       <main className="game-main">
         <PhraseDisplay phrase={phrase} revealedChars={state.revealedChars} />
         <GuessHistory
