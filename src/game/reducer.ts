@@ -2,10 +2,11 @@ import { phrases } from '../phrases'
 import { validateWord } from './dictionary'
 import type { GameAction, GameState } from './types'
 
-/** Returns the initial state for a fresh game. */
-export function initialState(): GameState {
+/** Returns the initial state for a fresh game, optionally starting at a given level index. */
+export function initialState(startLevel = 0): GameState {
+  const clampedLevel = Math.max(0, Math.min(startLevel, phrases.length - 1))
   return {
-    currentLevel: 0,
+    currentLevel: clampedLevel,
     guesses: [],
     revealedChars: new Set(),
     missedChars: new Set(),
